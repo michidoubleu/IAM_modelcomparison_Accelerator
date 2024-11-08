@@ -1,8 +1,11 @@
 ###### baseline comparison code
-## Author: MW
-## Aim: Calctrends, to compare between models
+
+## Author: Michael Wögerer, (IIASA)
+
+## Aim: Comparison of trends between models after merge from: https://accelerator.iiasa.ac.at/
 ## Notes: Magnet 2019 changed to 2020 for easier comparison, be transparent about that
 ## V1 of this script, if you find bugs, feel free to fix them or mail me via wogerer@iiasa.ac.at
+
 
 rm(list=ls())
 
@@ -13,18 +16,18 @@ rm(list=ls())
 ##############################################################################################################################
 ##############################################################################################################################
 
-comp.file <- "inputs/Ipsita_Merge_29102024.csv" # set location of the acccelerator merge file!!!
+comp.file <- "inputs/Ipsita_Merge_29102024.csv" # set location of the accelerator merge file!!!
 output.label <- "_v0_MW" #all outputs will end end with that label (except plots to avoid duplicates)
 
-create.plots <- FALSE #use with causion, setting this true will take LOTS of time by creating many plots, might lower user experience
-create.modelVSaglink <- TRUE #quite fast. compares trens between models and aglink for all time series where data in both is present
+create.plots <- FALSE #use with caution, setting this true will take LOTS of time by creating many plots, might lower user experience
+create.modelVSaglink <- TRUE #quite fast. compares trends between models and aglink for all time series where data in both is present
 create.model.diverging.trend.ranking <- TRUE
   only.opposing.signs <- TRUE #This will cause reporting to only include time series where trends between lowest and highest model have opposite signs
   include.scaled.sheets <- FALSE #ranking based on difference divided by intercept. differences in smaller regions more highlighted
   include.level.sheets <- TRUE #also provides sheets with level differences in 2020
 EU.only <- TRUE #Will restrict the results to be based on European regions (countries as well as regions)
 
-#if vectors are kept empty, results will be based on all repotings, otherwise restricted to named ones.
+#if vectors are kept empty, results will be based on all reportings, otherwise restricted to named ones.
 var.select <- c("area","emis", "prod", "yild", "xprc")
 item.select <- c()
 
@@ -32,7 +35,6 @@ item.select <- c()
 ##############################################################################################################################
 
 ##### DONE WITH SETTINGS, YOU MAY RUN THAT STUFF NOW
-
 
 
 
@@ -48,7 +50,6 @@ dir.create("plots")
 
 
 ### read data
-# comp.dat <- read.csv("AllModels_merge_22102024_test.csv")
 comp.dat <- read.csv(comp.file)
 
 ### paste some tables for quick info
@@ -65,22 +66,12 @@ comp.dat <- comp.dat %>% filter(scenario!="module_bb")
 comp.dat <- comp.dat %>% mutate(scenario="baseline")
 table(comp.dat$model,comp.dat$scenario)
 
-### selecction of camparison variables (price missing, what exactly is the price)
-# comp.vars <- c("area", "prod", "yild", "nett", "cons", "food", "feed")
-# comp.dat <- comp.dat %>% filter(variable%in%comp.vars)
-
-### selecction of camparison items
+### selection of comparison items
 comp.dat <- comp.dat %>% filter(nchar(item)%in%c(3,4))
 check.table <- table(comp.dat$item,comp.dat$model)
 
-#### filter out comparable items
-# rows_with_oneorless0 <- rownames(check.table)[rowSums(check.table == 0) <= 1]
-# comp.dat <- comp.dat %>% filter(item%in%rows_with_oneorless0)
-# table(comp.dat$model,comp.dat$item)
 
-### comparison #1
-
-#chnage Magnet to 2020 for easier comparison, be transparent about that
+#change Magnet to 2020 for easier comparison, be transparent about that
 comp.dat <- comp.dat %>% mutate(year=ifelse(model=="magnet"&year==2019, 2020, year))
 table(comp.dat$year, comp.dat$model)
 
@@ -372,19 +363,7 @@ for(vv in all.vars){
   temp <- res.temp %>% left_join(names.temp.min) %>% left_join(names.temp.max) %>% filter(diff!=0) %>% arrange(desc(diff))
   writeData(wb, paste0(vv, "_level"), temp)
 }
-
-
 }
-
-
 saveWorkbook(wb, paste0("outputs/outliers_analysis",output.label,".xlsx"), overwrite = TRUE)
-
-
-
 }
-
-
-
-
-
 
