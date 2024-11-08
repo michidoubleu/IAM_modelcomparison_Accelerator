@@ -2,6 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-.plots/
-.inputs/
-.outputs/
+**/plots/
+**/inputs/
+**/outputs/
