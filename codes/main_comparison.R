@@ -12,30 +12,33 @@ rm(list=ls())
 
 
 ###### SOME SETTINGS, YOU MAY CHANGE THESE TO YOUR NEEDS
-
 ##############################################################################################################################
 ##############################################################################################################################
 
 comp.file <- "inputs/Ipsita_Merge_29102024.csv" # set location of the accelerator merge file!!!
-output.label <- "_v0_MW" #all outputs will end end with that label (except plots to avoid duplicates)
+output.label <- "_postSEVILLA" #all outputs will end end with that label (except plots to avoid duplicates)
+output.folder <- "nov21_old_merge" #subfolder name in outputs and plots folder for versioning
 
-create.plots <- FALSE #use with caution, setting this true will take LOTS of time by creating many plots, might lower user experience
+create.plots <- TRUE #use with caution, setting this true will take LOTS of time by creating many plots, might lower user experience
 create.modelVSaglink <- TRUE #quite fast. compares trends between models and aglink for all time series where data in both is present
-create.model.diverging.trend.ranking <- TRUE
+create.model.diverging.trend.ranking <- TRUE #quite fast. compares trends between models and reports them ranked by max trend divergence
   only.opposing.signs <- TRUE #This will cause reporting to only include time series where trends between lowest and highest model have opposite signs
   include.scaled.sheets <- FALSE #ranking based on difference divided by intercept. differences in smaller regions more highlighted
   include.level.sheets <- TRUE #also provides sheets with level differences in 2020
 EU.only <- TRUE #Will restrict the results to be based on European regions (countries as well as regions)
 
+#OUTPUT FILTERING
+critical.witzke <- TRUE #based on excel by peter witzke, dependent on sheet name and start row.. might fail with updates
+critical.file <- "baseline_critical_outliers20241109.xlsx" #name of the file from witzke
+
 #if vectors are kept empty, results will be based on all reportings, otherwise restricted to named ones.
-var.select <- c("area","emis", "prod", "yild", "xprc")
+var.select <- c("area","emis", "prod", "yild", "xprc", "cons")
 item.select <- c()
 
 ##############################################################################################################################
 ##############################################################################################################################
 
 ##### DONE WITH SETTINGS, YOU MAY RUN THAT STUFF NOW
-
 
 
 ### load libraries
@@ -45,12 +48,49 @@ library(broom)
 library(openxlsx)
 library(ggplot2)
 
-dir.create("outputs")
-dir.create("plots")
-
+dir.create(paste0(output.folder))
+dir.create(paste0(output.folder,"/outputs"))
+dir.create(paste0(output.folder,"/plots"))
 
 ### read data
 comp.dat <- read.csv(comp.file)
+
+
+#######
+##### filtering
+if(critical.witzke){
+  to.filter <- openxlsx::read.xlsx(paste0("inputs/",critical.file), sheet = "important_items", startRow = 7)
+  colnames(to.filter) <- c("combi","region", "item","importance", "exclusion", "treshold")
+  to.filter$treshold <- as.numeric(to.filter$treshold)
+  to.filter <- to.filter[!is.na(to.filter$treshold),]
+
+  comp.dat <- comp.dat %>% mutate(to.select=paste0(toupper(region),toupper(item))) %>% filter(to.select%in%to.filter$combi) %>% dplyr::select(-to.select)
+
+  if(length(var.select)!=0){
+    comp.dat <- comp.dat %>%
+      filter(variable%in%var.select)
+  }
+
+} else {
+
+
+
+  if(EU.only){
+    EU.select <- c("eue", "eur", "aut", "bgr", "blx", "cyp", "cze", "deu", "dnk", "esp", "est", "fin", "fra", "gbr", "grc", "hrv", "hun", "irl", "ita", "ltu", "lva", "mlt", "nld", "pol", "prt", "rou", "svk", "svn", "swe", "alb", "bel", "bih", "mkd", "mne", "srb", "lux")
+    comp.dat <- comp.dat %>%
+      filter(region%in%EU.select)
+  }
+  if(length(var.select)!=0){
+    comp.dat <- comp.dat %>%
+      filter(variable%in%var.select)
+  }
+  if(length(item.select)!=0){
+    comp.dat <- comp.dat %>%
+      filter(item%in%item.select)
+  }
+
+}
+
 
 ### paste some tables for quick info
 table(comp.dat$model, comp.dat$scenario)
@@ -78,22 +118,6 @@ table(comp.dat$year, comp.dat$model)
 # Ensure value is numeric
 comp.dat <- comp.dat %>%
   mutate(value = as.numeric(value))
-
-#######
-##### filtering
-if(EU.only){
-  EU.select <- c("eue", "eur", "aut", "bgr", "blx", "cyp", "cze", "deu", "dnk", "esp", "est", "fin", "fra", "gbr", "grc", "hrv", "hun", "irl", "ita", "ltu", "lva", "mlt", "nld", "pol", "prt", "rou", "svk", "svn", "swe", "alb", "bel", "bih", "mkd", "mne", "srb", "lux")
-  comp.dat <- comp.dat %>%
-    filter(region%in%EU.select)
-}
-if(length(var.select)!=0){
-  comp.dat <- comp.dat %>%
-    filter(variable%in%var.select)
-}
-if(length(item.select)!=0){
-  comp.dat <- comp.dat %>%
-    filter(item%in%item.select)
-}
 
 
 
@@ -140,20 +164,21 @@ model_colors <- c(
 # rr <- "bgr"
 
 
-for(vv in variables){
-  temp.v <- comp.dat %>% ungroup() %>% filter(variable==vv)
-  if(nrow(temp.v)==0){next}
-  dir.create(paste0("plots/",vv))
+
   for(ii in items){
-    temp.i <- temp.v %>% ungroup() %>% filter(item==ii)
+    temp.i <- comp.dat %>% ungroup() %>% filter(item==ii)
     if(nrow(temp.i)==0){next}
-    dir.create(paste0("plots/",vv,"/",ii))
     for(rr in regions){
       temp.r <- temp.i %>% ungroup() %>% filter(region==rr)
-      curr.unit <- temp.r$unit[1]
       if(nrow(temp.r)==0){next}
+      pdf(paste0(output.folder,"/plots/",ii,"_",rr, "_trend_comparison.pdf"), width = 7, height = 4)
+      for(vv in variables){
+        temp.v <- temp.r %>% ungroup() %>% filter(variable==vv)
+        if(nrow(temp.v)==0){next}
+        curr.unit <- temp.v$unit[1]
+
       ### temp.plotdata
-      plot_data <- temp.r %>%
+      plot_data <- temp.v %>%
         left_join(before2020_trend, by = c("model", "scenario", "region", "variable", "item")) %>%
         left_join(after2020_trend, by = c("model", "scenario", "region", "variable", "item")) %>%
         mutate(
@@ -189,10 +214,9 @@ for(vv in variables){
         theme(legend.position = "right") +
         geom_vline(xintercept = 2020, color = "grey", size = .6)
 
-
-      ggsave(paste0("plots/",vv,"/",ii,"/",rr, "_trend_comparison.png"), ppp, height = 6, width = 10)
-
-    }
+      print(ppp)
+      }
+      dev.off()
   }
 }
 
@@ -279,7 +303,7 @@ for(mm in models){
 
 
   # Save the workbook to a file
-  saveWorkbook(wb, paste0("outputs/",mm,"_comparison",output.label,".xlsx"), overwrite = TRUE)
+  saveWorkbook(wb, paste0(output.folder,"/outputs/",mm,"_comparison",output.label,".xlsx"), overwrite = TRUE)
 
 }
 }
@@ -364,6 +388,6 @@ for(vv in all.vars){
   writeData(wb, paste0(vv, "_level"), temp)
 }
 }
-saveWorkbook(wb, paste0("outputs/outliers_analysis",output.label,".xlsx"), overwrite = TRUE)
+saveWorkbook(wb, paste0(output.folder,"/outputs/outliers_analysis",output.label,".xlsx"), overwrite = TRUE)
 }
 
