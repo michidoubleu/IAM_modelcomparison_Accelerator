@@ -9,7 +9,7 @@ dir.create(paste0(output.folder))
 dir.create(paste0(output.folder,"/outputs"))
 dir.create(paste0(output.folder,"/plots"))
 dir.create(paste0(output.folder,"/plots/heatmaps"))
-non.country <- c("ame", "anz", "eue", "eur", "fsu", "men", "oam", "oas", "osa", "sas", "sea", "ssa", "wld", "blx", "gcm")
+non.country <- c("ame", "anz", "eue", "eur", "fsu", "men", "oam", "oas", "osa", "sas", "sea", "ssa", "wld", "nam", "gcm")
 
 ### read data
 comp.dat <- read.csv(comp.file)

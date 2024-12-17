@@ -22,7 +22,7 @@ ggplot(temp.heat_complete, aes(x = model, y = variable, fill = value)) +
     low = "red", high = "green", n.breaks = 9, # Specify color range and number of steps
     name = "Number of regions/countries"
   ) +
-  labs(title = paste0("Model reporting status in number of regions/countries per item"),
+  labs(title = paste0("Model reporting status in number of regions/countries per item and variable"),
        x = "Model",
        y = "Variable") +
   theme_minimal() +
@@ -39,7 +39,7 @@ ggsave(paste0(output.folder,"/plots/heatmaps/heatmap_regionnumber_all.pdf"), las
 
 
 
-heat.comp <- comp.dat.unfiltered %>% filter(model!="fao", item%in%unique(comp.dat$item), region%in%non.country) %>% mutate(itemreg=paste0(region,"-",item)) %>% filter(year==2020) %>% group_by(model, item, variable) %>% summarise(value=n())
+heat.comp <- comp.dat.unfiltered %>% filter(model!="fao", item%in%unique(comp.dat$item), region%in%c(non.country, "usa", "bra", "chn", "can", "ind")) %>% mutate(itemreg=paste0(region,"-",item)) %>% filter(year==2020) %>% group_by(model, item, variable) %>% summarise(value=n())
 
 
 # Step 1: Create a complete grid of all combinations
@@ -62,7 +62,7 @@ ggplot(temp.heat_complete, aes(x = model, y = variable, fill = value)) +
     low = "red", high = "green", n.breaks = 9, # Specify color range and number of steps
     name = "Number of regions"
   ) +
-  labs(title = paste0("Model reporting status in number of regions per item"),
+  labs(title = paste0("Model reporting status in number of regions per item and variable"),
        x = "Model",
        y = "Variable") +
   theme_minimal() +
@@ -96,7 +96,7 @@ ggplot(temp.heat_complete, aes(x = model, y = variable, fill = value)) +
     low = "red", high = "green", n.breaks = 9, # Specify color range and number of steps
     name = "Number of countries"
   ) +
-  labs(title = paste0("Model reporting status in number of countries per item"),
+  labs(title = paste0("Model reporting status in number of countries per item and variable"),
        x = "Model",
        y = "Variable") +
   theme_minimal() +
