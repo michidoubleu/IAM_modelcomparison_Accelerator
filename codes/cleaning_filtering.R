@@ -15,7 +15,7 @@ non.country <- c("ame", "anz", "eue", "eur", "fsu", "men", "oam", "oas", "osa", 
 comp.dat <- read.csv(comp.file)
 
 #### avoid that some models have capitalized letters in reporting
-comp.dat <- comp.dat %>% mutate(variable=tolower(variable), item=tolower(item), region=tolower(region))
+comp.dat <- comp.dat %>% mutate(variable=tolower(variable), item=tolower(item), region=tolower(region), scenario=tolower(scenario), model=tolower(model))
 
 ### compare scenario names, as all model report different, (agmemod has 2, assuming baseline is correct)
 comp.dat <- comp.dat %>% filter(scenario!="module_bb")
@@ -31,6 +31,11 @@ comp.dat <- comp.dat %>% mutate(year=ifelse(model=="magnet"&year==2019, 2020, ye
 # Ensure value is numeric
 comp.dat <- comp.dat %>%
   mutate(value = as.numeric(value))
+
+##### remove inf
+comp.dat <- comp.dat[!is.infinite(comp.dat$value),]
+comp.dat <- comp.dat[!is.nan(comp.dat$value),]
+comp.dat <- comp.dat[!is.na(comp.dat$value),]
 
 
 if(length(var.select)!=0){
