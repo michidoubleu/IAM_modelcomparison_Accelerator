@@ -4,3 +4,9 @@
 .Ruserdata
 **/plots/
 **/outputs/
+# Ignore everything in inputs folder
+inputs/*
+# Except the outliers folder and its contents
+!inputs/outliers/
+!inputs/outliers/**
+codes/user_settings.R
