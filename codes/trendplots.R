@@ -26,7 +26,7 @@ for(ii in items){
   for(rr in regions){
     temp.r <- temp.i %>% ungroup() %>% filter(region==rr)
     if(nrow(temp.r)==0){next}
-    pdf(paste0(output.folder,"/plots/",ii,"_",rr, "_trend_comparison.pdf"), width = 7, height = 4)
+    png(paste0(output.folder,"/plots/",ii,"_",rr, "_trend_comparison.png"), width = 7, height = 4, units = "in", res = 300)
     for(vv in variables){
       temp.v <- temp.r %>% ungroup() %>% filter(variable==vv)
       if(nrow(temp.v)==0){next}

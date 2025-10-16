@@ -4,7 +4,7 @@
 heat.comp <- comp.dat %>% filter(model!="fao") %>% mutate(itemreg=paste0(region,"-",item)) %>% filter(year==2020)
 
 
-pdf(paste0(output.folder,"/plots/heatmaps/model_reporting_map.pdf"), width = 14, height = 5)
+png(paste0(output.folder,"/plots/heatmaps/model_reporting_map.png"), width = 14, height = 5, units = "in", res = 300)
 
 for(rrr in unique(heat.comp$region)){
 

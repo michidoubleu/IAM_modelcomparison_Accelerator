@@ -29,7 +29,7 @@ ggplot(temp.heat_complete, aes(x = model, y = variable, fill = value)) +
   facet_wrap(~item, scales = "free") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.4))
 
-ggsave(paste0(output.folder,"/plots/heatmaps/heatmap_regionnumber_all.pdf"), last_plot(), width = 12, height = 9)
+ggsave(paste0(output.folder,"/plots/heatmaps/heatmap_regionnumber_all.png"), last_plot(), width = 12, height = 9)
 
 
 
@@ -69,7 +69,7 @@ ggplot(temp.heat_complete, aes(x = model, y = variable, fill = value)) +
   facet_wrap(~item, scales = "free") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.4))
 
-ggsave(paste0(output.folder,"/plots/heatmaps/heatmap_regionnumber_region.pdf"), last_plot(), width = 12, height = 9)
+ggsave(paste0(output.folder,"/plots/heatmaps/heatmap_regionnumber_region.png"), last_plot(), width = 12, height = 9)
 
 
 
@@ -103,5 +103,5 @@ ggplot(temp.heat_complete, aes(x = model, y = variable, fill = value)) +
   facet_wrap(~item, scales = "free") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.4))
 
-ggsave(paste0(output.folder,"/plots/heatmaps/heatmap_regionnumber_countries.pdf"), last_plot(), width = 12, height = 9)
+ggsave(paste0(output.folder,"/plots/heatmaps/heatmap_regionnumber_countries.png"), last_plot(), width = 12, height = 9)
 

@@ -24,7 +24,7 @@ ggplot(temp.heat.wld, aes(x = variable, y = itemreg, fill = as.factor(number))) 
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggsave(paste0(output.folder,"/plots/heatmaps/heatmap_wld.pdf"), last_plot(), width = 6, height = 5)
+ggsave(paste0(output.folder,"/plots/heatmaps/heatmap_wld.png"), last_plot(), width = 6, height = 5)
 
 
 # Create the heatmap with discrete colors and text colors
@@ -39,7 +39,7 @@ ggplot(temp.heat.reg, aes(x = variable, y = itemreg, fill = as.factor(number))) 
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggsave(paste0(output.folder,"/plots/heatmaps/heatmap_region.pdf"), last_plot(), width = 6, height = 12)
+ggsave(paste0(output.folder,"/plots/heatmaps/heatmap_region.png"), last_plot(), width = 6, height = 12)
 
 # Create the heatmap with discrete colors and text colors
 ggplot(temp.heat.country, aes(x = variable, y = itemreg, fill = as.factor(number))) +
@@ -53,4 +53,4 @@ ggplot(temp.heat.country, aes(x = variable, y = itemreg, fill = as.factor(number
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggsave(paste0(output.folder,"/plots/heatmaps/heatmap_country.pdf"), last_plot(), width = 6, height = 12)
+ggsave(paste0(output.folder,"/plots/heatmaps/heatmap_country.png"), last_plot(), width = 6, height = 12)

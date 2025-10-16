@@ -27,7 +27,7 @@ if(any(create.plots, create.modelVSaglink, create.model.diverging.trend.ranking)
 
 
 if(create.plots){
-  source("codes/trendplots.R")
+  source("codes/trendplots_png.R")
 }
 
 if(create.modelVSaglink){
